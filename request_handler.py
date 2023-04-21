@@ -1,6 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from views import get_all_animals, get_single_animal, get_all_locations, get_single_location, get_all_employees, get_single_employee, create_animal, create_location, create_employee
+from views import get_all_animals, get_single_animal, get_all_locations, get_single_location, get_all_employees, get_single_employee, create_animal, create_location, create_employee, get_single_customer, get_all_customers, create_customer
 
 
 # Here's a class. It inherits from another class.
@@ -81,7 +81,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "locations":
             if id is not None:
                 response = get_single_location(id)
-   
+
             else:
                 response = get_all_locations()
         if resource == "employees":
@@ -89,7 +89,13 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = get_single_employee(id)
 
             else:
-                response = get_all_employees
+                response = get_all_employees()
+        if resource == "customers":
+            if id is not None:
+                response = get_single_customer(id)
+
+            else:
+                response = get_all_customers()
         self.wfile.write(json.dumps(response).encode())
 
     # Here's a method on the class that overrides the parent's method.
@@ -117,6 +123,8 @@ class HandleRequests(BaseHTTPRequestHandler):
             new_data = create_location(post_body)
         if resource == "employees":
             new_data = create_employee(post_body)
+        if resource == "customers":
+            new_data = create_customer(post_body)
 
         # Encode the new animal and send in response
         self.wfile.write(json.dumps(new_data).encode())
