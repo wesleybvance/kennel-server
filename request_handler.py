@@ -1,6 +1,25 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from views import get_all_animals, get_single_animal, get_all_locations, get_single_location, get_all_employees, get_single_employee, create_animal, create_location, create_employee, get_single_customer, get_all_customers, create_customer, delete_animal, delete_customer, delete_employee, delete_location, update_animal, update_customer, update_employee, update_location
+from views import (get_all_animals,
+                   get_single_animal,
+                   get_all_locations,
+                   get_single_location,
+                   get_all_employees,
+                   get_single_employee,
+                   create_animal,
+                   create_location,
+                   create_employee,
+                   get_single_customer,
+                   get_all_customers,
+                   create_customer,
+                   delete_animal,
+                   delete_customer,
+                   delete_employee,
+                   delete_location,
+                   update_animal,
+                   update_customer,
+                   update_employee,
+                   update_location)
 
 
 # Here's a class. It inherits from another class.
@@ -18,6 +37,17 @@ class HandleRequests(BaseHTTPRequestHandler):
 # Here's a class function
 
     def parse_url(self, path):
+        """Functon splits path into tuple, returning 
+        the resource and id (if it exists) from the URL 
+
+        Args:
+            path (string): the URL being routed, self.path
+
+        Returns:
+            resource: string, the first part of the URL path
+            id: number, the id from the resource if accessing 
+            a particular object
+        """
 
         # Just like splitting a string in JavaScript. If the
         # path is "/animals/1", the resulting list will
@@ -67,6 +97,10 @@ class HandleRequests(BaseHTTPRequestHandler):
     # Here's a method on the class that overrides the parent's method.
     # It handles any GET request.
     def do_GET(self):
+        """GET request function that overrides the parent method.
+        Handles GET requests for animals, locations, employees, 
+        and customers.
+        """
         self._set_headers(200)
         response = {}  # Default response
 
@@ -102,6 +136,10 @@ class HandleRequests(BaseHTTPRequestHandler):
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
     def do_POST(self):
+        """Method overriding the parent's for POST requests. 
+        Handles post requests for animals, locations, employees,
+        and customers.
+        """
         self._set_headers(201)
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
@@ -134,6 +172,13 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any PUT request.
 
     def do_PUT(self):
+        """Overrides the parent method for PUT requests.
+        Handles PUT requests for animals, customer, locations, 
+        and employees. PUT requests require the entire object 
+        that is being updated to be included in the request, unlike
+        PATCH, in which only the portion that needs to be updated
+        can be passed.
+        """
         self._set_headers(204)
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
@@ -156,6 +201,10 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.wfile.write("".encode())
 
     def do_DELETE(self):
+        """Method overriding the parent for handling 
+        DELETE requests. Handles DELETE requests for 
+        animals, customers, employees, and locations.
+        """
         # Set a 204 response code
         self._set_headers(204)
 
