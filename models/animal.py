@@ -1,4 +1,7 @@
 class Animal():
+    """Animal class to create instances
+    of Kennel Animals
+    """
 
     # Class initializer. It has 5 custom parameters, with the
     # special `self` parameter that every method on a class
