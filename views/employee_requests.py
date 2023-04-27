@@ -49,7 +49,7 @@ def get_all_employees():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # Employee class above.
-            employee = Employee(row['id'], row['name'])
+            employee = Employee(row['id'], row['name'], row['location_id'])
 
             employees.append(employee.__dict__) # see the notes below
             # for an explanation on this line of code.
@@ -77,7 +77,7 @@ def get_single_employee(id):
         data = db_cursor.fetchone()
 
         # Create a employee instance from the current row
-        employee = Employee(data['id'], data['name'])
+        employee = Employee(data['id'], data['name'], data['location_id'])
 
         return employee.__dict__
 
@@ -110,3 +110,28 @@ def update_employee(id, new_employee):
         if employee["id"] == id:
             EMPLOYEES[index] = new_employee
             break
+
+def get_employee_by_location_id(location_id):
+
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        select
+            e.id,
+            e.name,
+            e.location_id,
+        from Employee e
+        WHERE e.location_id = ?
+        """, ( location_id, ))
+
+        employees = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            employee = Employee(row['id'], row['name'], row['location_id'])
+            employees.append(employee.__dict__)
+
+    return employees

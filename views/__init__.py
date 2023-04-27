@@ -20,3 +20,5 @@ from .location_requests import update_location
 from .employee_requests import update_employee
 from .customer_requests import get_customer_by_email
 from .animal_requests import get_animal_by_location_id
+from .employee_requests import get_employee_by_location_id
+from .animal_requests import get_animal_by_status
