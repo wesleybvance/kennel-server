@@ -32,7 +32,9 @@ def get_all_employees():
         db_cursor.execute("""
         SELECT
             e.id,
-            e.name
+            e.name,
+            e.address,
+            e.location_id
         FROM employee e
         """)
 
@@ -49,7 +51,7 @@ def get_all_employees():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # Employee class above.
-            employee = Employee(row['id'], row['name'], row['location_id'])
+            employee = Employee(row['id'], row['name'], row['address'], row['location_id'])
 
             employees.append(employee.__dict__) # see the notes below
             # for an explanation on this line of code.
@@ -68,7 +70,9 @@ def get_single_employee(id):
         db_cursor.execute("""
         SELECT
             e.id,
-            e.name
+            e.name,
+            e.address,
+            e.location_id
         FROM employee e
         WHERE e.id = ?
         """, ( id, ))
@@ -77,7 +81,7 @@ def get_single_employee(id):
         data = db_cursor.fetchone()
 
         # Create a employee instance from the current row
-        employee = Employee(data['id'], data['name'], data['location_id'])
+        employee = Employee(data['id'], data['name'], data['address'], data['location_id'])
 
         return employee.__dict__
 
@@ -94,15 +98,15 @@ def create_employee(employee):
     return employee
 
 def delete_employee(id):
-    """DELETE EMPLOYEE"""
-    employee_index = -1
+    """METHOD FOR DELETING EMPLOYEE 
+    ROW BY ID"""
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
 
-    for index, employee in enumerate(EMPLOYEES):
-        if employee["id"] == id:
-            employee_index = index
-
-    if employee_index >= 0:
-        EMPLOYEES.pop(employee_index)
+        db_cursor.execute("""
+        DELETE FROM employee
+        WHERE id = ?
+        """, (id, ))
 
 def update_employee(id, new_employee):
     """UPDATE EMPLOYEE"""
@@ -122,6 +126,7 @@ def get_employee_by_location_id(location_id):
         select
             e.id,
             e.name,
+            e.address,
             e.location_id,
         from Employee e
         WHERE e.location_id = ?
@@ -131,7 +136,7 @@ def get_employee_by_location_id(location_id):
         dataset = db_cursor.fetchall()
 
         for row in dataset:
-            employee = Employee(row['id'], row['name'], row['location_id'])
+            employee = Employee(row['id'], row['name'], row['address'], row['location_id'])
             employees.append(employee.__dict__)
 
     return employees

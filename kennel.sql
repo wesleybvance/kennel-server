@@ -69,3 +69,6 @@ SELECT
     a.customer_id
 FROM animal a
 WHERE a.id = 4
+
+INSERT INTO `Animal` VALUES (null, "Daps", "Kennel", "Boxer", 2, 2);
+INSERT INTO `Employee` VALUES (null, "Madi Peper", "35498 Madison Ave", 1);

@@ -132,20 +132,15 @@ def create_animal(animal):
     return animal
 
 def delete_animal(id):
-    """DOSCTRING TBD 2023"""
-    # Initial -1 value for animal index, in case one isn't found
-    animal_index = -1
+    """METHOD FOR DELETING ANIMAL 
+    ROW BY ID"""
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
 
-    # Iterate the ANIMALS list, but use enumerate() so that you
-    # can access the index value of each item
-    for index, animal in enumerate(ANIMALS):
-        if animal["id"] == id:
-            # Found the animal. Store the current index.
-            animal_index = index
-
-    # If the animal was found, use pop(int) to remove it from list
-    if animal_index >= 0:
-        ANIMALS.pop(animal_index)
+        db_cursor.execute("""
+        DELETE FROM animal
+        WHERE id = ?
+        """, (id, ))
 
 def update_animal(id, new_animal):
     """DOCSTRING TBD 2023
@@ -163,6 +158,8 @@ def update_animal(id, new_animal):
             break
 
 def get_animal_by_location_id(location_id):
+    """METHOD FOR GETTING ANIMAL
+    BY ASSOCIATED LOCATION ID"""
 
     with sqlite3.connect("./kennel.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
@@ -192,6 +189,8 @@ def get_animal_by_location_id(location_id):
     return animals
 
 def get_animal_by_status(status):
+    """METHOD FOR GETTING ANIMAL
+    BY ASSOCIATED STATUS"""
 
     with sqlite3.connect("./kennel.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
