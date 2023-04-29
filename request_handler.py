@@ -180,14 +180,8 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any PUT request.
 
     def do_PUT(self):
-        """Overrides the parent method for PUT requests.
-        Handles PUT requests for animals, customer, locations, 
-        and employees. PUT requests require the entire object 
-        that is being updated to be included in the request, unlike
-        PATCH, in which only the portion that needs to be updated
-        can be passed.
-        """
-        self._set_headers(204)
+        """method to override parent for 
+        PUT requests"""
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
         post_body = json.loads(post_body)
@@ -195,19 +189,27 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
 
-        # Delete a single animal from the list
+        # set default value of success
+        success = False
+
         if resource == "animals":
-            update_animal(id, post_body)
-        if resource == "customers":
-            update_customer(id, post_body)
-        if resource == "locations":
-            update_location(id, post_body)
-        if resource == "employees":
-            update_employee(id, post_body)
+            # will return either True or False from `update_animal`
+            success = update_animal(id, post_body)
+        # rest of the elif's
+        elif resource == "customers":
+            success = update_customer(id, post_body)
+        elif resource == "employees":
+            success = update_employee(id, post_body)
+        elif resource == "locations":
+            success = update_location(id, post_body)
 
-        # Encode the new animal and send in response
+        # handle the value of success
+        if success:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
+
         self.wfile.write("".encode())
-
     def do_DELETE(self):
         """Method overriding the parent for handling 
         DELETE requests. Handles DELETE requests for 

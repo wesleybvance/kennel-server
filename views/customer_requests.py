@@ -28,7 +28,9 @@ def get_all_customers():
         db_cursor.execute("""
         SELECT
             c.id,
-            c.name
+            c.name,
+            c.address,
+            c.password
         FROM customer c
         """)
 
@@ -64,7 +66,9 @@ def get_single_customer(id):
         db_cursor.execute("""
         SELECT
             c.id,
-            c.name
+            c.name,
+            c.address,
+            c.password
         FROM customer c
         WHERE c.id = ?
         """, ( id, ))
@@ -107,14 +111,38 @@ def delete_customer(id):
         """, (id, ))
 
 def update_customer(id, new_customer):
-    """UPDATE CUSTOMER"""
-    for index, customer in enumerate(CUSTOMERS):
-        if customer["id"] == id:
-            CUSTOMERS[index] = new_customer
-            break
+    """UPDATE CUSTOMER WITH SQL QUERY"""
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
+        # ? parameter for each field in table
+        # tuple argument contains corresponding key
+        # in the dictionary for the request
+        db_cursor.execute("""
+        UPDATE Customer
+            SET
+                name = ?,
+                address = ?,
+                email = ?,
+                password = ?
+        WHERE id = ?
+        """, (new_customer['name'], new_customer['address'],
+              new_customer['email'], new_customer['password'], id, ))
+
+        # Were any rows affected?
+        # Did the client send an `id` that exists?
+        rows_affected = db_cursor.rowcount
+
+    # return value of this function
+    if rows_affected == 0:
+        # Forces 404 response by main module
+        return False
+    else:
+        # Forces 204 response by main module
+        return True
 
 def get_customer_by_email(email):
-
+    """FUNCTION FOR GET REQUEST: 
+    GET CUSTOMER BY EMAIL QUERY"""
     with sqlite3.connect("./kennel.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -135,7 +163,8 @@ def get_customer_by_email(email):
         dataset = db_cursor.fetchall()
 
         for row in dataset:
-            customer = Customer(row['id'], row['name'], row['address'], row['email'] , row['password'])
+            customer = Customer(row['id'], row['name'], row['address'],
+            row['email'] , row['password'])
             customers.append(customer.__dict__)
 
     return customers

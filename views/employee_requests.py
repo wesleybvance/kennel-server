@@ -109,13 +109,37 @@ def delete_employee(id):
         """, (id, ))
 
 def update_employee(id, new_employee):
-    """UPDATE EMPLOYEE"""
-    for index, employee in enumerate(EMPLOYEES):
-        if employee["id"] == id:
-            EMPLOYEES[index] = new_employee
-            break
+    """UPDATE EMPLOYEE WITH SQL QUERY"""
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
+        # ? parameter for each field in table
+        # tuple argument contains corresponding key
+        # in the dictionary for the request
+        db_cursor.execute("""
+        UPDATE Employee
+            SET
+                name = ?,
+                address = ?,
+                location_id = ?
+        WHERE id = ?
+        """, (new_employee['name'], new_employee['address'],
+              new_employee['location_id'], id, ))
+
+        # Were any rows affected?
+        # Did the client send an `id` that exists?
+        rows_affected = db_cursor.rowcount
+
+    # return value of this function
+    if rows_affected == 0:
+        # Forces 404 response by main module
+        return False
+    else:
+        # Forces 204 response by main module
+        return True
 
 def get_employee_by_location_id(location_id):
+    """FUNCTION FOR GET REQUEST - GET
+    EMPLOYEE BY LOCATION ID"""
 
     with sqlite3.connect("./kennel.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
@@ -127,7 +151,7 @@ def get_employee_by_location_id(location_id):
             e.id,
             e.name,
             e.address,
-            e.location_id,
+            e.location_id
         from Employee e
         WHERE e.location_id = ?
         """, ( location_id, ))
