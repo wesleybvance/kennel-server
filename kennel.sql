@@ -99,3 +99,17 @@ SELECT
 FROM Animal a
 JOIN Customer c
     ON c.id = a.customer_id
+
+SELECT
+		l.id,
+		l.name,
+		l.address,
+		a.name,
+		e.name
+	FROM Location l
+	JOIN Animal a
+		ON l.id = a.location_id
+	JOIN Employee e
+		ON l.id = e.location_id
+
+SELECT * FROM Animal ORDER BY id DESC;

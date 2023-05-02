@@ -1,6 +1,8 @@
 import sqlite3
 import json
 from models import Location
+from views.employee_requests import get_employee_by_location_id
+from views.animal_requests import get_animal_by_location_id
 
 LOCATIONS = [
     {
@@ -78,6 +80,12 @@ def get_single_location(id):
 
         # Create a location instance from the current row
         location = Location(data['id'], data['name'], data['address'])
+
+        employees = get_employee_by_location_id(id)
+        animals = get_animal_by_location_id(id)
+
+        location.animals = animals
+        location.employees = employees
 
         return location.__dict__
 

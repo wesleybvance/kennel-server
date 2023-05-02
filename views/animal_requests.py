@@ -123,29 +123,31 @@ def get_single_animal(id):
 
         return animal.__dict__
 
-def create_animal(animal):
-    """DOCSTRING TBD 2023
+def create_animal(new_animal):
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
 
-    Args:
-        animal (_type_): _description_
+        db_cursor.execute("""
+        INSERT INTO Animal
+            ( name, breed, status, location_id, customer_id )
+        VALUES
+            ( ?, ?, ?, ?, ?);
+        """, (new_animal['name'], new_animal['breed'],
+              new_animal['status'], new_animal['locationId'],
+              new_animal['customerId'], ))
 
-    Returns:
-        _type_: _description_
-    """
-    # Get the id value of the last animal in the list
-    max_id = ANIMALS[-1]["id"]
+        # The `lastrowid` property on the cursor will return
+        # the primary key of the last thing that got added to
+        # the database.
+        id = db_cursor.lastrowid
 
-    # Add 1 to whatever that number is
-    new_id = max_id + 1
+        # Add the `id` property to the animal dictionary that
+        # was sent by the client so that the client sees the
+        # primary key in the response.
+        new_animal['id'] = id
 
-    # Add an `id` property to the animal dictionary
-    animal["id"] = new_id
 
-    # Add the animal dictionary to the list
-    ANIMALS.append(animal)
-
-    # Return the dictionary with `id` property added
-    return animal
+    return new_animal
 
 def delete_animal(id):
     """METHOD FOR DELETING ANIMAL 
